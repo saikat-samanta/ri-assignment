@@ -18,12 +18,13 @@ import {
   Header,
 } from "../../components";
 import { NoEmployeeFound } from "../../Assets";
-import { FABButton } from "../../Base";
+import { FABButton, MessageWithBtn } from "../../Base";
 import { IDBContext } from "../../context";
 import { type EmployeeSchema } from "../../schemas";
 
 export function Home(): React.JSX.Element {
-  const { IDBInstance, getAllEmployee, deleteEmployee } = React.useContext(IDBContext);
+  const { IDBInstance, getAllEmployee, deleteEmployee, updateEmployee } =
+    React.useContext(IDBContext);
   const navigate = useNavigate();
   const theme = useTheme();
   const match = useMediaQuery(theme.breakpoints.down("md"));
@@ -52,9 +53,14 @@ export function Home(): React.JSX.Element {
       response.onsuccess = function (this, _ev) {
         const out = this.result.reduce<typeof employeeList>(
           (pre, cur) => ({
-            current: cur.endDate === undefined ? [...(pre.current ?? []), cur] : pre.current ?? [],
+            current:
+              cur.endDate === undefined && !(cur.isDeleted ?? false)
+                ? [...(pre.current ?? []), cur]
+                : pre.current ?? [],
             previous:
-              cur.endDate !== undefined ? [...(pre.previous ?? []), cur] : pre.previous ?? [],
+              cur.endDate !== undefined && !(cur.isDeleted ?? false)
+                ? [...(pre.previous ?? []), cur]
+                : pre.previous ?? [],
           }),
           {
             current: [],
@@ -86,7 +92,21 @@ export function Home(): React.JSX.Element {
         setShowAlert({
           show: true,
           status: "success",
-          message: "Employee deleted successfully.",
+          message: (
+            <MessageWithBtn
+              message="Employee deleted successfully."
+              label="Undo"
+              onClick={() => {
+                const res = updateEmployee({ ...data, isDeleted: false });
+                if (res !== undefined) {
+                  res.onsuccess = function () {
+                    fetchEmployee();
+                    handleAlertClose();
+                  };
+                }
+              }}
+            />
+          ),
         });
         fetchEmployee();
       };

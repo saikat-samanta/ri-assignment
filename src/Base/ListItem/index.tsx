@@ -3,6 +3,7 @@ import { Delete, Edit } from "@mui/icons-material";
 import { Grid, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import moment from "moment";
 import type { EmployeeSchema } from "../../schemas";
+import { RoleList } from "../../constant";
 
 export interface ListItemProps {
   value: EmployeeSchema;
@@ -24,7 +25,7 @@ export function ListItem({ value, onEdit, onDelete }: ListItemProps): React.JSX.
         </Grid>
         <Grid item>
           <Typography fontSize="14px" fontWeight="400">
-            {value.role}
+            {RoleList.find((el) => el.value === value.role)?.key}
           </Typography>
         </Grid>
         <Grid alignItems="center" container item>

@@ -8,7 +8,7 @@ export const IDBContext = React.createContext<{
   updateEmployee: (data: EmployeeSchema) => IDBRequest<IDBValidKey> | undefined;
   getAllEmployee: () => IDBRequest<EmployeeSchema[]> | undefined;
   getIndividualEmployee: (id: number) => IDBRequest<EmployeeSchema> | undefined;
-  deleteEmployee: (data: EmployeeSchema) => IDBRequest<undefined> | undefined;
+  deleteEmployee: (data: EmployeeSchema) => IDBRequest<IDBValidKey> | undefined;
 }>({
   IDBInstance: undefined,
   addEmployee: () => undefined,
@@ -79,12 +79,12 @@ export function DBContextProvider({ children }: React.PropsWithChildren): React.
     }
     return undefined;
   }
-  function deleteEmployee(data: EmployeeSchema): IDBRequest<undefined> | undefined {
+  function deleteEmployee(data: EmployeeSchema): IDBRequest<IDBValidKey> | undefined {
     const out = EmployeeSchema.parse(data);
     if (IDBInstance !== undefined && out.id !== undefined) {
       const transaction = IDBInstance.transaction(StoreName, "readwrite");
       const instance = transaction.objectStore(StoreName);
-      return instance?.delete(out.id);
+      return instance?.put({ ...out, isDeleted: true });
     }
     return undefined;
   }

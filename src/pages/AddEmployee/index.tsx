@@ -10,6 +10,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { IDBContext } from "../../context";
 import type { EmployeeSchema } from "../../schemas";
+import { MessageWithBtn } from "../../Base";
 
 export function AddEmployee(): React.JSX.Element {
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -54,7 +55,15 @@ export function AddEmployee(): React.JSX.Element {
           setShowAlert({
             show: true,
             status: "success",
-            message: "Employee updated successfully.",
+            message: (
+              <MessageWithBtn
+                message="Employee updated successfully."
+                label="View"
+                onClick={() => {
+                  navigate("/");
+                }}
+              />
+            ),
           });
         };
       }
@@ -65,7 +74,15 @@ export function AddEmployee(): React.JSX.Element {
           setShowAlert({
             show: true,
             status: "success",
-            message: "Employee added successfully.",
+            message: (
+              <MessageWithBtn
+                message="Employee added successfully."
+                label="View"
+                onClick={() => {
+                  navigate("/");
+                }}
+              />
+            ),
           });
         };
       }
